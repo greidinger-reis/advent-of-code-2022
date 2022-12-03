@@ -8,7 +8,7 @@
 // const lines = testInput.split("\n");
 // console.log(lines);
 
-const input = await Deno.readTextFile("./input.txt");
+const input = await Deno.readTextFile("./03/input.txt");
 // console.log(input);
 
 const lines = input.split("\n");
@@ -69,7 +69,7 @@ function getPart2(): number {
                         prevLine1.includes(char) && prevLine2.includes(char)
                 )
         );
-        console.log("repeatedChars:", repeatedChars);
+        // console.log("repeatedChars:", repeatedChars);
 
         //@ts-ignore
         sum += priorities[repeatedChars.values().next().value];
