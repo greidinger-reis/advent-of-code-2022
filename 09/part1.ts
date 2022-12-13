@@ -118,7 +118,7 @@ function main(input: string) {
     moves.forEach((move) => {
         head.move(move);
     });
-
+    
     console.log(
         `Tail visited ${head.tail.visitedPositions.size} positions:`,
         head.tail.visitedPositions.print()
