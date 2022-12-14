@@ -1,6 +1,9 @@
 import { Command } from "https://deno.land/x/cliffy@v0.25.5/command/mod.ts";
 
-const session = await Deno.readTextFile(".aoc-session");
+const session = await Deno.readTextFile(".aoc-session").catch(() => {
+    console.error("No .aoc-session file found");
+    Deno.exit(1);
+});
 
 await new Command()
     .name("advent-of-fetch")
