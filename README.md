@@ -12,4 +12,11 @@ So all solutions in here are in typescript.
 I used [Deno](https://deno.land/) to quickly run the solutions on my machine.
 Deno is a javascript runtime that has built-in support for typescript.
 
+### Input fetcher
 
+Wrote a simple input fetcher with the [Cliffy](https://cliffy.io/) CLI Framework for Deno
+
+### Usage
+
+1. Paste your AOC session cookie into a file named .aoc-session on the root of this project.
+2. Run the fetch.ts with --allow-read & --allow-net. Options are --year, --day (both numbers). Argument is the file name to be written.
