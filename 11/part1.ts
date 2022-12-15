@@ -29,6 +29,14 @@ class Monke implements IMonke {
     ) {}
 
     public inspectItems(monkes: Monke[]) {
+        if (this.isPart2) {
+            this.part2InspectItems(monkes);
+            return;
+        }
+        this.part1InspectItems(monkes);
+    }
+
+    public part1InspectItems(monkes: Monke[]) {
         for (let item = 0; item < this.holdingItems.length; item++) {
             this.inspectedTimes++;
             this.holdingItems[item] = this.isPart2
@@ -44,6 +52,26 @@ class Monke implements IMonke {
         this.holdingItems = [];
     }
 
+    public part2InspectItems(monkes: Monke[]) {
+        const bigMOD = monkes.reduce((acc,monke) => acc * monke.divisibleBy, 1);
+
+        for (let item = 0; item < this.holdingItems.length; item++) {
+            this.inspectedTimes++;
+
+            this.holdingItems[item] = this.operation(this.holdingItems[item]) % bigMOD;
+
+            const monkeToThrow = this.getMonkeToThrow(this.holdingItems[item]);
+            
+            console.log(
+                `Monke ${this.number} threw item with worry level of ${this.holdingItems[item]} to monkey number ${monkeToThrow}`
+            );
+
+            monkes[monkeToThrow].holdingItems.push(this.holdingItems[item]);
+        }
+
+        this.holdingItems = [];
+    }
+
     public getMonkeToThrow(item: number) {
         return this.testFn(item, this.divisibleBy)
             ? this.truthyThrowTo
@@ -51,7 +79,7 @@ class Monke implements IMonke {
     }
 }
 
-function parseMonkes(input: string) {
+function parseMonkes(input: string, isPart2 = false) {
     const lines = input.split("\n");
     console.log(lines);
 
@@ -87,6 +115,11 @@ function parseMonkes(input: string) {
     };
 
     for (const line of lines) {
+        if(line.startsWith("Monkey")) {
+            currMonke.number = parseInt(line.split(" ")[1]);
+            continue;
+        }
+
         if (line.startsWith("  Starting items:")) {
             currMonke.holdingItems = line
                 .split(" ")
@@ -121,15 +154,18 @@ function parseMonkes(input: string) {
 
         if (line.length === 0) {
             console.log({ currMonke });
-            monkes.push(new Monke(
-                currMonke.number,
-                currMonke.holdingItems,
-                currMonke.operation,
-                currMonke.testFn,
-                currMonke.divisibleBy,
-                currMonke.truthyThrowTo,
-                currMonke.falsyThrowTo
-            ));
+            monkes.push(
+                new Monke(
+                    currMonke.number,
+                    currMonke.holdingItems,
+                    currMonke.operation,
+                    currMonke.testFn,
+                    currMonke.divisibleBy,
+                    currMonke.truthyThrowTo,
+                    currMonke.falsyThrowTo,
+                    isPart2
+                )
+            );
         }
     }
 
@@ -139,69 +175,61 @@ function parseMonkes(input: string) {
 function part1(input: string) {
     const monkes = parseMonkes(input);
     console.log(monkes);
+
     for (let round = 0; round < 20; round++) {
         console.log({ round });
         for (let monke = 0; monke < monkes.length; monke++) {
             monkes[monke].inspectItems(monkes);
         }
     }
+
     console.log(monkes);
+
+    const timesInspected = monkes
+        .map((monke) => monke.inspectedTimes)
+        .sort((a, b) => b - a)
+        .slice(0, 2);
+
+    const total = timesInspected[0] * timesInspected[1];
+
+    console.log({
+        timesInspected,
+        total,
+    });
+
+    return total;
+}
+
+function part2(input: string) {
+    const monkes = parseMonkes(input, true);
+    console.log(monkes);
+
+    for (let round = 0; round < 10000; round++) {
+        console.log({ round });
+        for (let monke = 0; monke < monkes.length; monke++) {
+            monkes[monke].inspectItems(monkes);
+        }
+    }
+
+    console.log(monkes);
+
     const timesInspected = monkes
         .map((monke) => monke.inspectedTimes)
         .sort((a, b) => b - a)
         .slice(0, 2);
     const total = timesInspected[0] * timesInspected[1];
+
     console.log({
         timesInspected,
         total,
     });
+
     return total;
 }
 
-// function part2(input: string) {
-//     const monkes = parseMonkes(input);
-//     console.log(monkes);
-//     for (let round = 0; round < 10000; round++) {
-//         console.log({ round });
-//         for (let monke = 0; monke < monkes.length; monke++) {
-//             for (let i = 0; i < monkes[monke].holdingItems.length; i++) {
-//                 monkes[monke].inspectedTimes++;
-//                 monkes[monke].holdingItems[i] = monkes[monke].operation(
-//                     monkes[monke].holdingItems[i]
-//                 );
+// part1(input);
 
-//                 const monkeToThrow = monkes[monke].testFn(
-//                     monkes[monke].holdingItems[i],
-//                     monkes[monke].divisibleBy
-//                 )
-//                     ? monkes[monke].truthyThrowTo
-//                     : monkes[monke].falsyThrowTo;
-//                 console.log(
-//                     `Monke ${monke} threw item with worry level of ${monkes[monke].holdingItems[i]} to monkey number ${monkeToThrow}`
-//                 );
-//                 monkes[monkeToThrow].holdingItems.push(
-//                     monkes[monke].holdingItems[i]
-//                 );
-//             }
-//             monkes[monke].holdingItems = [];
-//         }
-//     }
-//     console.log(monkes);
-//     const timesInspected = monkes
-//         .map((monke) => monke.inspectedTimes)
-//         .sort((a, b) => b - a)
-//         .slice(0, 2);
-//     const total = timesInspected[0] * timesInspected[1];
-//     console.log({
-//         timesInspected,
-//         total,
-//     });
-//     return total;
-// }
-
-part1(input);
-
-// part2(testInput)
+part2(input);
 
 Deno.test("Day 11 - Part 1 - Test Input", () => {
     assertEquals(
