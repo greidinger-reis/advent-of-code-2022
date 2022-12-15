@@ -15,9 +15,9 @@ await new Command()
     .option("-d, --day <day:number>", "The day to fetch the input for", {
         default: new Date().getDate(),
     })
-    .arguments("<input:string>")
+    .arguments("<output_file:string>")
     .action(async (options, ...args) => {
-        const [input] = args;
+        const [output_file_name] = args;
         const { day, year } = options;
 
         const res = await fetch(
@@ -33,9 +33,9 @@ await new Command()
 
         if (!res) return;
 
-        await Deno.writeTextFile(input, res)
+        await Deno.writeTextFile(output_file_name, res)
             .then(() =>
-                console.log(`Wrote input of day: ${day} to file: ${input}`)
+                console.log(`Wrote input of day: ${day} to file: ${output_file_name}`)
             )
             .catch(() => console.error(`Failed to write input to file.`));
     })
